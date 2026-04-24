@@ -11,54 +11,74 @@
             --accent: #3498db; --danger: #ff4757; --warning: #ffa502; --success: #2ed573; --gold: #ffd700;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Roboto', sans-serif; }
-        body { background: var(--bg); color: var(--text); margin: 0; padding: 10px; height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
         
-        .dashboard { 
-            background: var(--card); padding: 12px; border-radius: 16px; width: 100%; max-width: 450px; 
-            text-align: center; margin-bottom: 10px; border: 1px solid #333; flex-shrink: 0;
+        body { 
+            background: var(--bg); color: var(--text); 
+            margin: 0; padding: 0; 
+            height: 100dvh; /* Dynamic height to handle Pixel navigation bars */
+            display: flex; flex-direction: column; 
+            overflow: hidden; 
         }
-        .profit { color: var(--gold); font-size: 1.4rem; font-weight: bold; letter-spacing: 0.5px; }
-        .weight { font-size: 3rem; font-weight: 900; margin: -5px 0; letter-spacing: -1px; }
-        .risk-bar { height: 8px; background: #222; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+        
+        /* FIXED HEADER */
+        .header { 
+            background: var(--card); padding: 12px; 
+            text-align: center; border-bottom: 1px solid #333; 
+            flex-shrink: 0; z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .profit { color: var(--gold); font-size: 1.2rem; font-weight: bold; }
+        .weight { font-size: 2.8rem; font-weight: 900; margin: -5px 0; letter-spacing: -1px; }
+        .risk-bar { height: 6px; background: #222; border-radius: 3px; overflow: hidden; margin: 8px 0; }
         #risk-fill { height: 100%; width: 0%; background: var(--success); transition: width 0.3s; }
 
-        .scroll-container { 
-            width: 100%; max-width: 450px; flex-grow: 1; overflow-y: auto; 
-            padding-right: 5px; margin-bottom: 10px;
+        /* SCROLLING MIDDLE */
+        .scroll-area { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 0 10px;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling for mobile */
         }
-        .tier-label { font-size: 0.7rem; color: #555; text-transform: uppercase; margin: 15px 0 8px 0; font-weight: bold; letter-spacing: 1.5px; width: 100%; border-bottom: 1px solid #222; padding-bottom: 3px;}
-        
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+        .tier-label { font-size: 0.65rem; color: #555; text-transform: uppercase; margin: 15px 0 8px 0; font-weight: bold; letter-spacing: 1.5px; border-bottom: 1px solid #222; padding-bottom: 3px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; padding-bottom: 10px; }
 
+        /* ITEM TILES */
         button.tile { 
             padding: 12px 4px; border-radius: 12px; background: #1a1a1a; color: white; border: 1px solid #333;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 70px; text-align: center; font-size: 0.8rem; transition: all 0.1s;
         }
         button.tile:active { background: var(--accent); border-color: var(--accent); transform: scale(0.95); }
-        .name-label { font-weight: 600; line-height: 1.2; margin-bottom: 6px; }
-        .pz-tag { font-size: 0.7rem; color: #888; background: #252525; padding: 2px 6px; border-radius: 4px; border: 1px solid #333; }
+        .name-label { font-weight: 600; line-height: 1.1; margin-bottom: 6px; }
+        .pz-tag { font-size: 0.65rem; color: #888; background: #252525; padding: 1px 5px; border-radius: 3px; }
 
-        .tier-high { border-bottom: 3px solid var(--gold) !important; box-shadow: inset 0 -10px 20px rgba(255, 215, 0, 0.05); }
+        .tier-high { border-bottom: 3px solid var(--gold) !important; }
         .tier-mid { border-bottom: 3px solid var(--accent) !important; }
         .tier-low { border-bottom: 3px solid #444 !important; }
 
-        .controls { display: flex; gap: 8px; width: 100%; max-width: 450px; padding: 10px 0; flex-shrink: 0; }
-        .btn-act { flex: 1; padding: 15px; font-weight: bold; border-radius: 12px; border: none; background: #333; color: white; text-transform: uppercase; font-size: 0.8rem; }
+        /* FIXED FOOTER */
+        .footer { 
+            background: var(--card); border-top: 1px solid #333; 
+            padding: 12px; flex-shrink: 0; z-index: 10;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+        }
+        .controls { display: flex; gap: 8px; width: 100%; max-width: 450px; margin: 0 auto; }
+        .btn-act { flex: 1; padding: 14px; font-weight: bold; border-radius: 12px; border: none; background: #333; color: white; text-transform: uppercase; font-size: 0.8rem; }
         .btn-reset { background: #b33939; }
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
+    <header class="header">
         <div class="profit"><span id="val">0</span><small>g</small></div>
-        <div class="weight"><span id="cur">0</span><small style="font-size:1.2rem; opacity:0.2"> / <span id="max">50</span></small></div>
-        <div id="itm" style="font-size:0.7rem; opacity:0.5; font-weight: bold;">0 / 10 ITEMS</div>
+        <div class="weight"><span id="cur">0</span><small style="font-size:1.1rem; opacity:0.2"> / <span id="max">50</span></small></div>
         <div class="risk-bar"><div id="risk-fill"></div></div>
-        <div id="risk-txt" style="font-size:0.7rem; font-weight:bold;">BREAK RISK: 0%</div>
-    </div>
+        <div id="risk-txt" style="font-size:0.7rem; font-weight:bold; color:var(--success)">BREAK RISK: 0%</div>
+    </header>
 
-    <div class="scroll-container">
+    <main class="scroll-area">
+        <div id="itm" style="font-size:0.65rem; opacity:0.5; font-weight: bold; text-align: center; margin-top: 10px;">0 / 10 ITEMS</div>
+        
         <div class="tier-label">High Value</div>
         <div id="grid-high" class="grid"></div>
 
@@ -67,22 +87,23 @@
 
         <div class="tier-label">Commons & Trash</div>
         <div id="grid-low" class="grid"></div>
-    </div>
+    </main>
 
-    <div class="controls">
-        <button class="btn-act" onclick="undo()">Undo</button>
-        <button class="btn-act btn-reset" onclick="reset()">Reset</button>
-        <select id="cap" style="background:#222; color:white; border:none; padding:10px; border-radius:12px; flex: 0.8;" onchange="render()">
-            <option value="50" selected>50pz</option>
-            <option value="100">100pz</option>
-            <option value="150">150pz</option>
-            <option value="250">250pz</option>
-        </select>
-    </div>
+    <footer class="footer">
+        <div class="controls">
+            <button class="btn-act" onclick="undo()">Undo</button>
+            <button class="btn-act btn-reset" onclick="reset()">Reset</button>
+            <select id="cap" style="background:#222; color:white; border:none; padding:10px; border-radius:12px; flex: 0.8; font-weight: bold;" onchange="render()">
+                <option value="50" selected>50pz</option>
+                <option value="100">100pz</option>
+                <option value="150">150pz</option>
+                <option value="250">250pz</option>
+            </select>
+        </div>
+    </footer>
 
     <script>
         let curW = 0, curG = 0, hist = [];
-        
         const fullLootTable = [
             { n: "Oxblood", w: 6, g: 13250, r: 0.3, t: "high" },
             { n: "Tropical Clam", w: 20, g: 5100, r: 1.9, t: "high" },
@@ -118,10 +139,7 @@
             fullLootTable.forEach(item => {
                 const btn = document.createElement('button');
                 btn.className = `tile tier-${item.t}`;
-                btn.innerHTML = `
-                    <span class="name-label">${item.n}</span>
-                    <span class="pz-tag">${item.w}pz</span>
-                `;
+                btn.innerHTML = `<span class="name-label">${item.n}</span><span class="pz-tag">${item.w}pz</span>`;
                 btn.onclick = () => add(item.n, item.w, item.g);
                 document.getElementById(`grid-${item.t}`).appendChild(btn);
             });
@@ -144,20 +162,15 @@
             document.getElementById('max').innerText = max;
             document.getElementById('val').innerText = Math.floor(curG).toLocaleString();
             document.getElementById('itm').innerText = `${hist.length} / 10 ITEMS`;
-
             const rem = max - curW;
             let risk = fullLootTable.filter(i => i.w > rem).reduce((sum, i) => sum + i.r, 0);
             risk = Math.min(Math.round(risk), 100);
             if (curW >= max) risk = 100;
-
             const fill = document.getElementById('risk-fill');
             const txt = document.getElementById('risk-txt');
             fill.style.width = risk + "%";
-            
-            if (risk < 30) { fill.style.background = "var(--success)"; txt.style.color = "var(--success)"; }
-            else if (risk < 70) { fill.style.background = "var(--warning)"; txt.style.color = "var(--warning)"; }
-            else { fill.style.background = "var(--danger)"; txt.style.color = "var(--danger)"; }
-            
+            fill.style.background = (risk < 30) ? "var(--success)" : (risk < 70) ? "var(--warning)" : "var(--danger)";
+            txt.style.color = fill.style.background;
             txt.innerText = curW >= max ? "BUCKET BROKEN" : `BREAK RISK: ${risk}%`;
             if (curW > max && navigator.vibrate) navigator.vibrate(200);
         }
