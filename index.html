@@ -9,18 +9,18 @@
         :root {
             --bg: #0d0d0d; --card: #1a1a1a; --text: #f0f0f0;
             --accent: #3498db; --danger: #ff4757; --warning: #ffa502; --success: #2ed573; --gold: #ffd700;
+            --mandra: #9b59b6;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Roboto', sans-serif; }
-        
+
         body { 
             background: var(--bg); color: var(--text); 
             margin: 0; padding: 0; 
-            height: 100dvh; /* Dynamic height to handle Pixel navigation bars */
+            height: 100dvh; 
             display: flex; flex-direction: column; 
             overflow: hidden; 
         }
-        
-        /* FIXED HEADER */
+
         .header { 
             background: var(--card); padding: 12px; 
             text-align: center; border-bottom: 1px solid #333; 
@@ -29,81 +29,90 @@
         }
         .profit { color: var(--gold); font-size: 1.2rem; font-weight: bold; }
         .weight { font-size: 2.8rem; font-weight: 900; margin: -5px 0; letter-spacing: -1px; }
-        .risk-bar { height: 6px; background: #222; border-radius: 3px; overflow: hidden; margin: 8px 0; }
+        
+        .gauge-container { margin: 8px 0; }
+        .bar-bg { height: 6px; background: #222; border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
         #risk-fill { height: 100%; width: 0%; background: var(--success); transition: width 0.3s; }
+        #luck-fill { height: 100%; width: 0%; background: var(--mandra); transition: width 0.3s; }
+        
+        .label-sub { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .hidden { display: none !important; }
 
-        /* SCROLLING MIDDLE */
         .scroll-area { 
             flex-grow: 1; 
             overflow-y: auto; 
             padding: 0 10px;
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling for mobile */
+            -webkit-overflow-scrolling: touch;
         }
         .tier-label { font-size: 0.65rem; color: #555; text-transform: uppercase; margin: 15px 0 8px 0; font-weight: bold; letter-spacing: 1.5px; border-bottom: 1px solid #222; padding-bottom: 3px; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-bottom: 15px; }
 
-        /* ITEM TILES */
         button.tile { 
             padding: 12px 4px; border-radius: 12px; background: #1a1a1a; color: white; border: 1px solid #333;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 70px; text-align: center; font-size: 0.8rem; transition: all 0.1s;
+            height: 75px; text-align: center; font-size: 0.75rem; transition: all 0.1s;
         }
         button.tile:active { background: var(--accent); border-color: var(--accent); transform: scale(0.95); }
-        .name-label { font-weight: 600; line-height: 1.1; margin-bottom: 6px; }
-        .pz-tag { font-size: 0.65rem; color: #888; background: #252525; padding: 1px 5px; border-radius: 3px; }
+        .name-label { font-weight: 600; line-height: 1.1; margin-bottom: 6px; height: 2.2em; display: flex; align-items: center; justify-content: center;}
+        .pz-tag { font-size: 0.6rem; color: #888; background: #252525; padding: 1px 5px; border-radius: 3px; }
 
         .tier-high { border-bottom: 3px solid var(--gold) !important; }
         .tier-mid { border-bottom: 3px solid var(--accent) !important; }
         .tier-low { border-bottom: 3px solid #444 !important; }
 
-        /* FIXED FOOTER */
         .footer { 
             background: var(--card); border-top: 1px solid #333; 
             padding: 12px; flex-shrink: 0; z-index: 10;
             box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
         }
-        .controls { display: flex; gap: 8px; width: 100%; max-width: 450px; margin: 0 auto; }
+        .controls { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 450px; margin: 0 auto; }
+        .row { display: flex; gap: 8px; width: 100%; }
         .btn-act { flex: 1; padding: 14px; font-weight: bold; border-radius: 12px; border: none; background: #333; color: white; text-transform: uppercase; font-size: 0.8rem; }
+        .btn-upgrade { background: var(--accent); width: 100%; }
         .btn-reset { background: #b33939; }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <div class="profit"><span id="val">0</span><small>g</small></div>
+        <div id="tier-display" style="font-size: 0.6rem; color: var(--accent); font-weight: bold; letter-spacing: 1px;">LEVEL 1 BUCKET</div>
+        <div class="profit">SESSION: <span id="val">-500</span><small>g</small></div>
         <div class="weight"><span id="cur">0</span><small style="font-size:1.1rem; opacity:0.2"> / <span id="max">50</span></small></div>
-        <div class="risk-bar"><div id="risk-fill"></div></div>
-        <div id="risk-txt" style="font-size:0.7rem; font-weight:bold; color:var(--success)">BREAK RISK: 0%</div>
+        
+        <div class="gauge-container">
+            <div class="bar-bg"><div id="risk-fill"></div></div>
+            <div id="risk-txt" class="label-sub" style="color:var(--success)">WEIGHT RISK: 0%</div>
+        </div>
+
+        <div id="mandra-container" class="gauge-container hidden">
+            <div class="bar-bg"><div id="luck-fill"></div></div>
+            <div id="luck-txt" class="label-sub" style="color:var(--mandra)">MANDRA LUCK: 0%</div>
+        </div>
     </header>
 
     <main class="scroll-area">
-        <div id="itm" style="font-size:0.65rem; opacity:0.5; font-weight: bold; text-align: center; margin-top: 10px;">0 / 10 ITEMS</div>
-        
         <div class="tier-label">High Value</div>
         <div id="grid-high" class="grid"></div>
-
         <div class="tier-label">Mid Value</div>
         <div id="grid-mid" class="grid"></div>
-
         <div class="tier-label">Commons & Trash</div>
         <div id="grid-low" class="grid"></div>
     </main>
 
     <footer class="footer">
         <div class="controls">
-            <button class="btn-act" onclick="undo()">Undo</button>
-            <button class="btn-act btn-reset" onclick="reset()">Reset</button>
-            <select id="cap" style="background:#222; color:white; border:none; padding:10px; border-radius:12px; flex: 0.8; font-weight: bold;" onchange="render()">
-                <option value="50" selected>50pz</option>
-                <option value="100">100pz</option>
-                <option value="150">150pz</option>
-                <option value="250">250pz</option>
-            </select>
+            <button id="upgrade-btn" class="btn-act btn-upgrade" onclick="upgrade()">Upgrade Bucket (100pz)</button>
+            <div class="row">
+                <button class="btn-act" onclick="undo()">Undo</button>
+                <button class="btn-act btn-reset" onclick="reset()">Reset Session</button>
+            </div>
         </div>
     </footer>
 
     <script>
-        let curW = 0, curG = 0, hist = [];
+        let curW = 0, sessionG = -500, hist = [], currentTierIdx = 0, mandraAttempts = 0;
+        const tiers = [50, 100, 150, 200]; // Corrected Tier 4 to 200pz
+
         const fullLootTable = [
             { n: "Oxblood", w: 6, g: 13250, r: 0.3, t: "high" },
             { n: "Tropical Clam", w: 20, g: 5100, r: 1.9, t: "high" },
@@ -132,6 +141,7 @@
             { n: "Pamtam Kelp", w: 6, g: 7, r: 6.2, t: "low" },
             { n: "Bibiki Slug", w: 3, g: 5, r: 11.1, t: "low" },
             { n: "Pebble", w: 7, g: 1, r: 22.3, t: "low" },
+            { n: "Trash", w: 6, g: 0, r: 7.0, t: "low" }
         ];
 
         function initGrids() {
@@ -145,32 +155,88 @@
         }
 
         function add(name, w, g) {
-            if (hist.length >= 10) return;
-            if (navigator.vibrate) navigator.vibrate(10);
-            curW += w; curG += g;
-            hist.push({w, g});
+            if (navigator.vibrate) navigator.vibrate(15);
+            let isMandraTier = (currentTierIdx === 3);
+            if (isMandraTier) mandraAttempts++;
+            curW += w; sessionG += g;
+            hist.push({w, g, m: isMandraTier});
             render();
         }
 
-        function undo() { if (hist.length) { let l = hist.pop(); curW -= l.w; curG -= l.g; render(); } }
-        function reset() { curW = 0; curG = 0; hist = []; render(); }
+        function undo() { 
+            if (hist.length) { 
+                let last = hist.pop(); 
+                curW -= last.w; 
+                sessionG -= last.g; 
+                if (last.m) mandraAttempts--; 
+                render(); 
+            } 
+        }
+
+        function upgrade() {
+            if (currentTierIdx < tiers.length - 1) {
+                currentTierIdx++;
+                if (navigator.vibrate) navigator.vibrate([20, 50, 20]);
+                render();
+            }
+        }
+
+        function reset() {
+            if (confirm("Reset Session? Returns to Level 1 and -500g.")) {
+                curW = 0; sessionG = -500; currentTierIdx = 0; mandraAttempts = 0; hist = []; render();
+            }
+        }
 
         function render() {
-            const max = +document.getElementById('cap').value;
+            const max = tiers[currentTierIdx];
             document.getElementById('cur').innerText = curW;
             document.getElementById('max').innerText = max;
-            document.getElementById('val').innerText = Math.floor(curG).toLocaleString();
-            document.getElementById('itm').innerText = `${hist.length} / 10 ITEMS`;
+            
+            const valEl = document.getElementById('val');
+            valEl.innerText = Math.floor(sessionG).toLocaleString();
+            valEl.style.color = (sessionG < 0) ? "var(--danger)" : "var(--gold)";
+            document.getElementById('tier-display').innerText = `LEVEL ${currentTierIdx + 1} BUCKET`;
+
+            const upBtn = document.getElementById('upgrade-btn');
+            if (currentTierIdx < tiers.length - 1) {
+                upBtn.style.display = "block";
+                upBtn.innerText = `Upgrade Bucket (${tiers[currentTierIdx+1]}pz)`;
+            } else {
+                upBtn.style.display = "none";
+            }
+
             const rem = max - curW;
-            let risk = fullLootTable.filter(i => i.w > rem).reduce((sum, i) => sum + i.r, 0);
-            risk = Math.min(Math.round(risk), 100);
-            if (curW >= max) risk = 100;
+            let weightRisk = fullLootTable.filter(i => i.w > rem).reduce((sum, i) => sum + i.r, 0);
+            weightRisk = Math.min(Math.round(weightRisk), 100);
+            
+            if (curW > max) weightRisk = 100;
+            
             const fill = document.getElementById('risk-fill');
             const txt = document.getElementById('risk-txt');
-            fill.style.width = risk + "%";
-            fill.style.background = (risk < 30) ? "var(--success)" : (risk < 70) ? "var(--warning)" : "var(--danger)";
+            fill.style.width = weightRisk + "%";
+            fill.style.background = (weightRisk < 30) ? "var(--success)" : (weightRisk < 70) ? "var(--warning)" : "var(--danger)";
             txt.style.color = fill.style.background;
-            txt.innerText = curW >= max ? "BUCKET BROKEN" : `BREAK RISK: ${risk}%`;
+            
+            if (curW > max) {
+                txt.innerText = "WEIGHT BREAK";
+            } else if (curW === max) {
+                txt.innerText = "CAPACITY MET (100%)";
+            } else {
+                txt.innerText = `WEIGHT RISK: ${weightRisk}%`;
+            }
+
+            const mandraContainer = document.getElementById('mandra-container');
+            if (currentTierIdx === 3) {
+                mandraContainer.classList.remove('hidden');
+                let mandraRisk = Math.round((1 - Math.pow(0.90, mandraAttempts)) * 100);
+                const luckFill = document.getElementById('luck-fill');
+                const luckTxt = document.getElementById('luck-txt');
+                luckFill.style.width = mandraRisk + "%";
+                luckTxt.innerText = `MANDRA LUCK: ${mandraRisk}% (${mandraAttempts} digs)`;
+            } else {
+                mandraContainer.classList.add('hidden');
+            }
+            
             if (curW > max && navigator.vibrate) navigator.vibrate(200);
         }
 
